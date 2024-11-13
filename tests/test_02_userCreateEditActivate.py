@@ -1,4 +1,4 @@
-from models.main import EditUserPage, CreateUserPage
+from models.user import EditUserPage, CreateUserPage
 from tests.test_01_authentication import test_validLogin as login
 
 def test_login(page):

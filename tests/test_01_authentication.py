@@ -1,4 +1,4 @@
-from models.main import LoginPage, InactiveLogin, InvalidLogin, ForgotPassword
+from models.authentication import LoginPage, InactiveLogin, InvalidLogin, ForgotPassword
 
 def test_invalidUsername(page):
     '''User can't log in with invalid username'''

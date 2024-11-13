@@ -1,5 +1,5 @@
 import pytest
-import os
+from datetime import datetime
 
 #all test functions in a test file run on the same browser context
 @pytest.fixture(scope="module")
@@ -34,16 +34,54 @@ def browser_context_args(browser_context_args):
     }
 
 @pytest.fixture
-def readWriteUserIndx():
-    with open(r"files\username_index.txt",'r') as f:
-        st = int(f.read())
-    with open(r"files\username_index.txt",'w') as f:
-        nst = st + 1
-        f.write(str(nst))
-    return st
-
-@pytest.fixture
 def readUserIndx():
     with open(r"files\username_index.txt",'r') as f:
         st = int(f.read())
     return st
+
+@pytest.fixture
+def readProductID():
+    with open(r"files\product_id.txt",'r') as f:
+        st = int(f.read())
+    return str(st)
+
+@pytest.fixture(scope="session")
+def today():
+    today = datetime.now()
+
+    year = today.year
+    month = today.month
+    day = today.day
+
+    if len(str(today.day))==1:
+        day = "0"+str(day)
+    if len(str(today.month))==1:
+        month = "0"+str(month)
+
+    day = f'{year}-{month}-{day}'
+    return day
+
+@pytest.fixture(scope="session")
+def tomorrow():
+    today = datetime.now()
+
+    if today.day in [28,29,30,31]:
+        if today.month == 12:
+            month = 1
+            year = today.year + 1
+        else:
+            month = today.month + 1
+            year = today.year
+        day = 1
+    else:
+        year = today.year
+        month = today.month
+        day = today.day + 1
+
+    if len(str(today.day))==1:
+        day = "0"+str(day)
+    if len(str(today.month))==1:
+        month = "0"+str(month)
+
+    day = f'{year}-{month}-{day}'
+    return day
