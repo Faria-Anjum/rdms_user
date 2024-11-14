@@ -1,4 +1,4 @@
-from models.productconfig import CreateProductTypeLogical, CreateProductTypePhysical, TypeValidationCheck
+from models.productconfig import CreateProductTypeLogical, CreateProductTypePhysical, TypeValidationCheck, EditProductTypePage
 from tests.test_01_authentication import test_validLogin as login
 
 def test_login(page):
@@ -26,3 +26,10 @@ def test_inputValidation(page):
     validation.navigateToProductTypeAdd()
     validation.checkUniqueProductTypeCode()
     validation.clickCancel()
+
+def test_editProductType(page):
+    editproduct = EditProductTypePage(page)
+    editproduct.navigateToTypeEdit()
+    editproduct.editProductInput()
+    editproduct.clickUpdate()
+    editproduct.confirmEdit()

@@ -1,4 +1,4 @@
-from models.productconfig import CreateNewCategoryLogical, CreateNewCategoryPhysical, CategoryValidationCheck
+from models.productconfig import CreateNewCategoryLogical, CreateNewCategoryPhysical, CategoryValidationCheck, EditProductCategoryPage
 from tests.test_01_authentication import test_validLogin as login
 
 def test_login(page):
@@ -26,3 +26,10 @@ def test_inputValidation(page):
     validation.navigateToProductTypeAdd()
     validation.checkUniqueCategoryName()
     validation.clickCancel()
+
+def test_editProductCategory(page):
+    editproduct = EditProductCategoryPage(page)
+    editproduct.navigateToTypeEdit()
+    editproduct.editProductInput()
+    editproduct.clickUpdate()
+    editproduct.confirmEdit()

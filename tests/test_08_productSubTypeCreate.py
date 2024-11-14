@@ -1,4 +1,4 @@
-from models.productconfig import CreateNewSubType, SubTypeValidationCheck
+from models.productconfig import CreateNewSubType, SubTypeValidationCheck, EditProductSubTypePage
 from tests.test_01_authentication import test_validLogin as login
 
 def test_login(page):
@@ -18,3 +18,10 @@ def test_inputValidation(page):
     validation.navigateToProductTypeAdd()
     validation.checkUniqueSubTypeName()
     validation.clickCancel()
+
+def test_editProductSubType(page):
+    editproduct = EditProductSubTypePage(page)
+    editproduct.navigateToTypeEdit()
+    editproduct.editProductInput()
+    editproduct.clickUpdate()
+    editproduct.confirmEdit()
