@@ -45,6 +45,24 @@ def readProductID():
         st = int(f.read())
     return str(st)
 
+@pytest.fixture
+def readProductTypeCode():
+    with open(r"files\product_type.txt",'r') as f:
+        st = int(f.read())
+    return str(st)
+
+@pytest.fixture
+def readCategoryCode():
+    with open(r"files\product_category.txt",'r') as f:
+        st = int(f.read())
+    return str(st)
+
+@pytest.fixture
+def readSubTypeCode():
+    with open(r"files\product_subtype.txt",'r') as f:
+        st = int(f.read())
+    return str(st)
+
 @pytest.fixture(scope="session")
 def today():
     today = datetime.now()

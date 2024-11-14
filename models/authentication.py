@@ -38,7 +38,7 @@ class LoginPage:
 
     def confirmSignedIn(self):
         expect(self.page.get_by_text("Signed In Successfully.")).to_be_visible()
-        self.page.get_by_label("close").click()
+        self.page.get_by_text("Signed In Successfully.").click()
         expect(self.page.get_by_text("Welcome")).to_be_visible()
         expect(self.page.get_by_role("link", name="Dashboard")).to_be_visible()
 
