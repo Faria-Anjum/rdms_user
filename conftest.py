@@ -40,6 +40,12 @@ def readUserIndx():
     return st
 
 @pytest.fixture
+def readBulkUserID():
+    with open(r"files\bulkuser_id.txt",'r') as f:
+        st = int(f.read())
+    return str(st)
+
+@pytest.fixture
 def readProductID():
     with open(r"files\product_id.txt",'r') as f:
         st = int(f.read())
