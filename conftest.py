@@ -69,6 +69,18 @@ def readSubTypeCode():
         st = int(f.read())
     return str(st)
 
+@pytest.fixture
+def readErrorID():
+    with open(r"files\errorguide_id.txt",'r') as f:
+        st = int(f.read())
+    return str(st)
+
+@pytest.fixture
+def readFAQID():
+    with open(r"files\faq_id.txt",'r') as f:
+        st = int(f.read())
+    return str(st)
+
 @pytest.fixture(scope="session")
 def today():
     today = datetime.now()
