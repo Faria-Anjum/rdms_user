@@ -12,11 +12,38 @@ def test_faqRequiredFieldsWarning(page, readFAQID):
     newfaq.clickSubmit()
     newfaq.requiredFieldWarning()
 
-def test_createFAQ(page, readFAQID):
-    '''Product can navigate to Create Product page and add logical product'''
+def test_InputValidationUrlSortOrder(page, readFAQID):
     newfaq = FAQPage(page, readFAQID)
-    newfaq.createNewFAQ()
+    newfaq.checkURL()
+    newfaq.checkNumericSortOrder()
+    newfaq.clickCancel()
+
+# def test_createVideoFAQ(page, readFAQID):
+#     newfaq = FAQPage(page, readFAQID)
+#     newfaq.clickAddNewFAQ()
+#     newfaq.createNewFAQ('VIDEO')
+#     newfaq.videoFAQAnswer()
+#     newfaq.clickSubmit()
+#     newfaq.confirmNewFAQ()
+
+def test_createPictureFAQ(page, readFAQID):
+    newfaq = FAQPage(page, readFAQID)
+    newfaq.clickAddNewFAQ()
+    newfaq.createNewFAQ('PICTURE')
+    newfaq.pictureFAQAnswer()
+    newfaq.clickSubmit()
+    newfaq.confirmNewFAQ()
+
+def test_createBasicFAQ(page, readFAQID):
+    newfaq = FAQPage(page, readFAQID)
+    newfaq.clickAddNewFAQ()
+    newfaq.createNewFAQ('BASIC')
+    newfaq.basicFAQAnswer()
     newfaq.clickSubmit()
     newfaq.confirmNewFAQ()
     newfaq.updateFAQID()
 
+def test_editFAQ(page, readFAQID):
+    newfaq = FAQPage(page, readFAQID)
+    newfaq.editFAQ()
+    newfaq.confirmEditedFAQ()

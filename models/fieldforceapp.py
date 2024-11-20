@@ -1,5 +1,5 @@
 from playwright.sync_api import expect
-import re
+import random
 
 class FieldForcePage:
     def __init__(self, page):
@@ -46,7 +46,7 @@ class ErrorGuidePage(FieldForcePage):
         self.page.get_by_placeholder("Provide possible solution").fill("test solution")
         self.page.get_by_placeholder("Enter sort order (number, e.g").click()
         self.page.get_by_placeholder("Enter sort order (number, e.g").fill("0")
-        self.page.get_by_label("Platform *").select_option("2")
+        self.page.get_by_label("Platform *").select_option(random.randrange(1,3))
         self.page.get_by_label("Status *").select_option("true")
 
     def clickSubmit(self):
@@ -54,6 +54,7 @@ class ErrorGuidePage(FieldForcePage):
 
     def confirmNewErrorGuide(self):
         expect(self.page.get_by_text("Created Successfully")).to_be_visible()
+        self.page.get_by_text("Created Successfully").click()
         expect(self.page.get_by_text(self.ID, exact = True)).to_be_visible()
 
     def writeErrorGuide(self):
@@ -80,7 +81,7 @@ class ErrorGuidePage(FieldForcePage):
         expect(self.page.get_by_text("This field is required", exact = True).first).to_be_visible()
 
     def editErrorGuide(self):
-        row = self.page.locator(f"tr:has-text('{int(self.ID)-1}')")
+        row = self.page.locator(f"tr:has-text('{self.ID}')")
         expect(row).to_be_visible()
         row.get_by_role("link").click()
         expect(self.page.get_by_text("Update Error Guide Item")).to_be_visible()
@@ -89,8 +90,11 @@ class ErrorGuidePage(FieldForcePage):
 
     def confirmEditedErrorGuide(self):
         # expect(self.page.get_by_text("Updated Successfully")).to_be_visible()
-        row = self.page.locator(f"tr:has-text('{int(self.ID)-1}')")
+        row = self.page.locator(f"tr:has-text('{self.ID}')")
         expect(row.locator("td:nth-child(2)")).to_contain_text("edited")
+
+    # def inactivateErrorGuide(self):
+        
 
 
     #     self.page.get_by_role("link", name="Error Guide").click()
@@ -148,25 +152,51 @@ class FAQPage(ErrorGuidePage):
     def __init__(self, page, readFAQID):
         self.page = page
         self.url = "https://stage-dms.robi.com.bd/#/fieldforce/"
-        self.ID = "Automated test question - " + readFAQID
+        self.ID = f" Automated test question [{readFAQID}"
         self.feature = "FAQ"
 
     def clickAddNewFAQ(self):
         return super().clickAddNewErrorGuide()
     
-    def createNewFAQ(self):
+    def createNewFAQ(self, type):
+        global name
+        self.page.pause()
+        platforms = ["RDMS", "SFA", "RedCube"]
+        platform = random.choice(platforms)
+        name = platform+self.ID+'-'+type.lower()+']'
         expect(self.page.get_by_text("Create New FAQ")).to_be_visible()
-        self.page.get_by_label("FAQ Type *").select_option("BASIC")
         self.page.get_by_placeholder("Type your question..").click()
-        self.page.get_by_placeholder("Type your question..").fill(self.ID)
-        self.page.get_by_placeholder("Provide answer to your").click()
-        self.page.get_by_placeholder("Provide answer to your").fill("test answer")
-        self.page.get_by_label("Platform *").select_option("RDMS")
+        self.page.get_by_placeholder("Type your question..").fill(name)
+        self.page.get_by_label("Platform *").select_option(platform)
         self.page.get_by_placeholder("Enter sort order (number, e.g").click()
         self.page.get_by_placeholder("Enter sort order (number, e.g").fill("0")
 
+    def basicFAQAnswer(self):
+        self.page.get_by_label("FAQ Type *").select_option('BASIC')
+        self.page.get_by_placeholder("Provide answer to your").click()
+        self.page.get_by_placeholder("Provide answer to your").fill("test answer")
+
+    def pictureFAQAnswer(self):
+        self.page.get_by_label("FAQ Type *").select_option('PICTURE')
+        self.page.get_by_placeholder("Provide an image file").click()
+        self.page.get_by_placeholder("Provide an image file").set_input_files(r"files\rdms_logo.png")
+
+    def videoFAQAnswer(self):
+        self.page.get_by_label("FAQ Type *").select_option('VIDEO')
+        self.page.get_by_placeholder("Provide a youtube video link").click()
+        self.page.get_by_placeholder("Provide a youtube video link").fill("https://youtu.be/rmC5bLymUgs?si=Q8wSP7NiPHd72o-H")
+
     def confirmNewFAQ(self):
-        return super().confirmNewErrorGuide()
+        expect(self.page.get_by_text("Created Successfully")).to_be_visible()
+        self.page.get_by_text("Created Successfully").click()
+        expect(self.page.get_by_text((name), exact = True)).to_be_visible()
+    
+    def checkURL(self):
+        self.page.get_by_label("FAQ Type *").select_option("VIDEO")
+        self.page.get_by_placeholder("Provide a youtube video link").click()
+        self.page.get_by_placeholder("Provide a youtube video link").fill("youtube")
+        expect(self.page.get_by_text("Must be a valid URL")).to_be_visible()
+        #self.page.pause()
 
     def updateFAQID(self):
         def writeFAQID():
@@ -177,6 +207,25 @@ class FAQPage(ErrorGuidePage):
                 f.write(str(nst))
             return st
         writeFAQID()
+
+    def editFAQ(self):
+        #row = self.page.locator(f"tr:has-text('{self.ID[:25]} {int(self.ID[26:])-1}')")
+        row = self.page.locator(f"tr:has-text('{name}')")
+        expect(row).to_be_visible()
+        row.get_by_role("link").click()
+        self.page.get_by_placeholder("Type your question..").click()
+        self.page.get_by_placeholder("Type your question..").fill(f"{name}_edit")
+        self.page.get_by_role("button", name="Update").click()
+
+    def clickCancel(self):
+        self.page.get_by_role("button", name="Cancel").click()
+        expect(self.page.get_by_role("main").get_by_text("FAQ List")).to_be_visible()
+        
+    def confirmEditedFAQ(self):
+        expect(self.page.get_by_text("Created Successfully")).to_be_visible()
+        self.page.get_by_text("Created Successfully").click()
+        row = self.page.locator(f"tr:has-text('{name}')")
+        expect(row.locator("td:nth-child(2)")).to_contain_text(f"{name}_edit")
 
         # self.page.get_by_label("FAQ Type *").select_option("PICTURE")
         # self.page.get_by_label("FAQ Type *").select_option("VIDEO")

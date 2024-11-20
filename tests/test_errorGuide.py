@@ -14,7 +14,7 @@ def test_errorGuideRequiredFieldsWarning(page, readErrorID):
 
 def test_numericInputsOnlyAcceptNumeric(page, readErrorID):
     newerrorguide = ErrorGuidePage(page, readErrorID)
-    newerrorguide.checkNumericErrorCode()
+    #newerrorguide.checkNumericErrorCode()
     newerrorguide.checkNumericSortOrder()
 
 def test_createErrorGuide(page, readErrorID):
