@@ -244,7 +244,6 @@ class FAQPage(ErrorGuidePage):
 
     def toggleFAQActivation(self):
         self.activation = name+'_edit'
-        print(self.activation)
         ErrorGuidePage.toggleErrorGuideActivation(self)
 
     def checkInactivatedFAQ(self):
