@@ -1,6 +1,5 @@
 from playwright.sync_api import expect
 from models.user import UserListPage
-import openpyxl
 
 class BulkUserCreatePage:
     def __init__(self, page, readBulkUserID):
@@ -15,10 +14,12 @@ class BulkUserCreatePage:
     def navigateToBulkUserCreate(self):
         expect(self.page.get_by_role("link", name=f"Bulk User {self.action}")).to_be_visible()
         self.page.get_by_role("link", name=f"Bulk User {self.action}").click()
-        self.page.get_by_label("Document(Only .xls, .xlsx) *").click()
 
     def selectMissingColumnsFile(self):
-        self.page.get_by_label("Document(Only .xls, .xlsx) *").set_input_files(r"files\Bulk_User_"+self.action+"_Missing_Columns.xlsx")
+        with self.page.expect_file_chooser() as fc_info:
+            self.page.get_by_label("Document(Only .xls, .xlsx) *").click()
+            file_chooser = fc_info.value
+            file_chooser.set_files(r"files\Bulk_User_"+self.action+"_Missing_Columns.xlsx")
         self.page.get_by_role("button", name="Upload").click()
         expect(self.page.get_by_text("does not")).to_be_visible()
 
@@ -36,8 +37,10 @@ class BulkUserCreatePage:
 
     def uploadValidFile(self):
         self.modifyValidBulkUsers()
-        self.page.get_by_label("Document(Only .xls, .xlsx) *").click()
-        self.page.get_by_label("Document(Only .xls, .xlsx) *").set_input_files(r"files\Bulk_User_"+self.action+"_Valid.xlsx")
+        with self.page.expect_file_chooser() as fc_info:
+            self.page.get_by_label("Document(Only .xls, .xlsx) *").click()
+            file_chooser = fc_info.value
+            file_chooser.set_files(r"files\Bulk_User_"+self.action+"_Valid.xlsx")
         self.page.get_by_role("button", name="Upload").click()
 
     def confirmCreatedBulkUsers(self):
