@@ -1,5 +1,5 @@
 from playwright.sync_api import expect
-import random
+import time, random
 
 class FieldForcePage:
     def __init__(self, page):
@@ -26,8 +26,9 @@ class ErrorGuidePage(FieldForcePage):
         self.page = page
         self.url = "https://stage-dms.robi.com.bd/#/fieldforce/"
         self.ID = readErrorID
-        self.error = "Automated test error - " + readErrorID
+        self.error = "Automated test error - " + self.ID
         self.feature = "Error Guide"
+        self.activation = 'Activation test error'
 
     def clickAddNewErrorGuide(self):
         expect(self.page.get_by_role("main").get_by_text(self.feature+" List", exact=True)).to_be_visible()
@@ -46,10 +47,11 @@ class ErrorGuidePage(FieldForcePage):
         self.page.get_by_placeholder("Provide possible solution").fill("test solution")
         self.page.get_by_placeholder("Enter sort order (number, e.g").click()
         self.page.get_by_placeholder("Enter sort order (number, e.g").fill("0")
-        self.page.get_by_label("Platform *").select_option(random.randrange(1,3))
+        self.page.get_by_label("Platform *").select_option(str(random.randrange(1,3)))
         self.page.get_by_label("Status *").select_option("true")
 
     def clickSubmit(self):
+        print(self.ID)
         self.page.get_by_role("button", name="Submit").click()
 
     def confirmNewErrorGuide(self):
@@ -57,7 +59,7 @@ class ErrorGuidePage(FieldForcePage):
         self.page.get_by_text("Created Successfully").click()
         expect(self.page.get_by_text(self.ID, exact = True)).to_be_visible()
 
-    def writeErrorGuide(self):
+    def updateErrorGuide(self):
         def writeErrorGuideID():
             with open(r"files\errorguide_id.txt",'r') as f:
                 st = int(f.read())
@@ -85,6 +87,7 @@ class ErrorGuidePage(FieldForcePage):
         expect(row).to_be_visible()
         row.get_by_role("link").click()
         expect(self.page.get_by_text("Update Error Guide Item")).to_be_visible()
+        time.sleep(0.25)
         desc = self.page.get_by_placeholder("Provide details for this").input_value()
         self.page.get_by_placeholder("Provide details for this").fill(desc+' - edited')
 
@@ -93,8 +96,23 @@ class ErrorGuidePage(FieldForcePage):
         row = self.page.locator(f"tr:has-text('{self.ID}')")
         expect(row.locator("td:nth-child(2)")).to_contain_text("edited")
 
-    # def inactivateErrorGuide(self):
-        
+    def toggleErrorGuideActivation(self):
+        row = self.page.locator(f"tr:has-text('{self.activation}')")
+        expect(row.get_by_role("button")).to_be_visible()
+        row.get_by_role("button").click()
+        self.page.get_by_text("Status Changed").click()
+
+    def checkInactivatedErrorGuide(self):
+        self.page.get_by_text("Inactive", exact=True).click()
+        row = self.page.locator(f"tr:has-text('{self.activation}')")
+        expect(row).to_be_visible()
+
+    def checkActivatedErrorGuide(self):
+        self.page.get_by_text("Active", exact=True).click()
+        row = self.page.locator(f"tr:has-text('{self.activation}')")
+        expect(row).to_be_visible()
+
+
 
 
     #     self.page.get_by_role("link", name="Error Guide").click()
@@ -160,7 +178,6 @@ class FAQPage(ErrorGuidePage):
     
     def createNewFAQ(self, type):
         global name
-        self.page.pause()
         platforms = ["RDMS", "SFA", "RedCube"]
         platform = random.choice(platforms)
         name = platform+self.ID+'-'+type.lower()+']'
@@ -187,7 +204,6 @@ class FAQPage(ErrorGuidePage):
         self.page.get_by_placeholder("Provide a youtube video link").fill("https://youtu.be/rmC5bLymUgs?si=Q8wSP7NiPHd72o-H")
 
     def confirmNewFAQ(self):
-        expect(self.page.get_by_text("Created Successfully")).to_be_visible()
         self.page.get_by_text("Created Successfully").click()
         expect(self.page.get_by_text((name), exact = True)).to_be_visible()
     
@@ -222,10 +238,20 @@ class FAQPage(ErrorGuidePage):
         expect(self.page.get_by_role("main").get_by_text("FAQ List")).to_be_visible()
         
     def confirmEditedFAQ(self):
-        expect(self.page.get_by_text("Created Successfully")).to_be_visible()
         self.page.get_by_text("Created Successfully").click()
         row = self.page.locator(f"tr:has-text('{name}')")
         expect(row.locator("td:nth-child(2)")).to_contain_text(f"{name}_edit")
+
+    def toggleFAQActivation(self):
+        self.activation = name+'_edit'
+        print(self.activation)
+        ErrorGuidePage.toggleErrorGuideActivation(self)
+
+    def checkInactivatedFAQ(self):
+        ErrorGuidePage.checkInactivatedErrorGuide(self)
+
+    def checkActivatedFAQ(self):
+        ErrorGuidePage.checkActivatedErrorGuide(self)
 
         # self.page.get_by_label("FAQ Type *").select_option("PICTURE")
         # self.page.get_by_label("FAQ Type *").select_option("VIDEO")
